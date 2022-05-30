@@ -1,14 +1,17 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:training_ex2/Model/MovieModel.dart';
+import 'package:training_ex2/screen/MovieDetail/MovieDetailViewModel.dart';
 
 import '../../gen/assets.gen.dart';
 
 class MovieDetail extends StatefulWidget {
 
-  const MovieDetail({Key? key, required this.movie}) : super(key: key);
+  const MovieDetail({Key? key, required this.movieId}) : super(key: key);
 
-  final MovieModel movie;
+  final num movieId;
 
   @override
   State<StatefulWidget> createState() => _MovieDetail();
@@ -16,6 +19,13 @@ class MovieDetail extends StatefulWidget {
 
 class _MovieDetail extends State<MovieDetail> {
   State<MovieDetail> createState() => _MovieDetail();
+
+  @override
+  initState() {
+    super.initState();
+    context.read<MovieDetailViewModel>().getMovieDetail(widget.movieId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +35,7 @@ class _MovieDetail extends State<MovieDetail> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
-                fontSize: 22
+                fontSize: 18
             )
         ),
         backgroundColor: Colors.white,
@@ -36,42 +46,42 @@ class _MovieDetail extends State<MovieDetail> {
         child: Column(
           children: [
             SizedBox(
-              width: double.infinity,
-              height: 250,
-              child: Stack (
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-                    child: Image.network(
-                      widget.movie.getBackdropURL(),
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.fill,
+                width: double.infinity,
+                height: 250,
+                child: Stack (
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+                      child: Image.network(
+                        context.watch<MovieDetailViewModel>().movie.getBackdropURL(),
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  Positioned(
-                    left: 20,
-                    bottom: 0,
-                    child: Image.network(
-                      widget.movie.getPosterURL(),
-                      width: 100,
-                      height: 150,
-                      fit: BoxFit.fill,
-                    ),
-                  )
-                ],
-              )
+                    Positioned(
+                      left: 20,
+                      bottom: 0,
+                      child: Image.network(
+                        context.watch<MovieDetailViewModel>().movie.getPosterURL(),
+                        width: 100,
+                        height: 150,
+                        fit: BoxFit.fill,
+                      ),
+                    )
+                  ],
+                )
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 const SizedBox(width: 20),
                 Text(
-                    widget.movie.title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
+                    context.watch<MovieDetailViewModel>().movie.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
                 ),
                 const Spacer(),
-                const Text('6.5'),
+                Text(context.watch<MovieDetailViewModel>().movie.voteAverage.toString()),
                 const SizedBox(width: 20)
               ],
             ),
@@ -135,16 +145,21 @@ class _MovieDetail extends State<MovieDetail> {
                   flex: 1,
                   child: Center(
                     child: Column(
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                             'Genre',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
                         ),
-                        SizedBox(height: 5),
-                        Text(
-                            'Drama',
-                            style: TextStyle(fontSize: 17)
-                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Text(
+                            context.watch<MovieDetailViewModel>().movie.getAllGenre(),
+                            style: const TextStyle(fontSize: 17),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -153,15 +168,15 @@ class _MovieDetail extends State<MovieDetail> {
                   flex: 1,
                   child: Center(
                     child: Column(
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                             'Release',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
-                            '2020-03-06',
-                            style: TextStyle(fontSize: 17)
+                            context.watch<MovieDetailViewModel>().movie.releaseDate,
+                            style: const TextStyle(fontSize: 17)
                         ),
                       ],
                     ),
@@ -174,7 +189,7 @@ class _MovieDetail extends State<MovieDetail> {
             Container(
               padding: const EdgeInsets.all(20),
               child: Text(
-                widget.movie.subTitle,
+                context.watch<MovieDetailViewModel>().movie.subTitle,
                 style: const TextStyle(fontSize: 16),
                 maxLines: 5,
                 overflow: TextOverflow.ellipsis,

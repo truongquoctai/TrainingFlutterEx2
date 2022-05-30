@@ -1,9 +1,12 @@
 
+import 'GenreModel.dart';
+
 class MovieModel {
+  num id = 0;
   String title = "";
   String subTitle = "";
   String releaseDate = "";
-  double voteAverage = 0.0;
+  num voteAverage = 0.0;
   List<Genre> genres = [];
   String backdropPath = "";
   String posterPath = "";
@@ -29,7 +32,7 @@ class MovieModel {
     return genre;
   }
 
-  MovieModel(this.title, this.subTitle, this.releaseDate, this.voteAverage,
+  MovieModel(this.id, this.title, this.subTitle, this.releaseDate, this.voteAverage,
       this.genres, this.backdropPath, this.posterPath);
   factory MovieModel.fromJson(dynamic json) {
     List<Genre> genres = [];
@@ -38,25 +41,14 @@ class MovieModel {
       genres = genreObjJson.map((genreJson) => Genre.fromJson(genreJson)).toList();
     }
     return MovieModel(
+        json['id'] as num,
         json['original_title'] as String,
         json['overview'] as String,
         json['release_date'] as String,
-        json['vote_average'] as double,
+        json['vote_average'] as num,
         genres,
         json['backdrop_path'] as String,
         json['poster_path'] as String
     );
-  }
-}
-
-
-class Genre {
-  int id = 0;
-  String name = "";
-
-  Genre(this.id, this.name);
-
-  factory Genre.fromJson(dynamic json) {
-    return Genre(json['id'] as int, json['name'] as String);
   }
 }
